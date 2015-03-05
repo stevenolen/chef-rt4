@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: cens-dhcp
+# Cookbook Name:: rt4
 # Recipe:: default
 #
 # Author: Steve Nolen <technolengy@gmail.com>
@@ -18,10 +18,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-node.set['dhcp']['options']['domain-name-servers'] = %w(131.179.128.30 131.179.128.16)
-node.set['dhcp']['parameters']['ddns-update-style'] = 'none'
-node.set['dhcp']['networks'] = ['131.179.144.0_24']
-node.set['dhcp']['groups'] = %w(static deny)
-node.set['dhcp']['parameters']['max-lease-time'] = '3600'
-node.set['dhcp']['parameters']['default-lease-time'] = '1800'
-include_recipe 'dhcp::server'
+package 'request-tracker4'
