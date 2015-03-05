@@ -19,29 +19,8 @@
 # limitations under the License.
 
 # Installs nginx and sets up spawn-fcgi rt4 route
-%w(libfcgi-perl procps spawn-fcgi).each do |pkg|
-  package pkg
-end
-
-include_recipe 'nginx'
-
-cookbook_file node['init'] do
-  source 'rt4-fcgi'
-  user 'root'
-  group 'root'
-  mode '0755'
-end
-
-service 'rt4-fcgi' do
-  supports start: true, restart: true, stop: true, status: false
-  action [:enable, :start]
-end
-
-template "#{node['nginx']['dir']}/sites-available/rt4" do
-  source "rt4_nginx.conf.erb"
-  mode 0644
-end
-
-nginx_site "rt4" do
-  action :enable
-end
+  %w(libapache2-mod-perl2 libapache2-mod-fastcgi libapache-dbi-perl libapache2-mod-fcgid libapache2-mod-perl2).each do |pkg|
+    package pkg
+  end
+  
+  include_recipe 'apache'
