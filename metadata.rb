@@ -7,3 +7,8 @@ long_description 'Installs/Configures request-tracker4'
 version '0.0.1'
 
 depends 'apt'
+depends 'apt'
+depends 'mysql'
+depends 'postgresql'
+depends 'nginx'
+depends 'httpd'
