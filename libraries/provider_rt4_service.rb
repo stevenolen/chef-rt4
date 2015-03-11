@@ -1,5 +1,5 @@
 require 'chef/provider/lwrp_base'
-require_relative 'helpers'  
+require_relative 'helpers'
 
 class Chef
   class Provider
@@ -25,7 +25,8 @@ class Chef
             action :create
             only_if { new_resource.db_host == 'localhost' }
           end
-          # TODO: support postgres
+        when 'postgresql'
+          include_recipe 'postgresql::server'
         end
 
         case new_resource.web_server
@@ -42,21 +43,10 @@ class Chef
               )
           end
 
-          template "/etc/init.d/#{new_resource.name}-fcgi" do
-            source 'rt4_fcgi_init.erb'
-            user 'root'
-            group 'root'
-            mode '0755'
-            cookbook 'rt4'
-            variables(
-              config: new_resource
-              )          
-          end
-
           nginx_site "#{new_resource.name}" do
             action :enable
           end
-          # TODO: support apache
+        # TODO: add apache support
         end
 
         configure_package_deps.each do |pkg|
@@ -78,7 +68,7 @@ class Chef
         directory "/usr/src/#{new_resource.name}"
         directory "/opt/#{new_resource.name}"
 
-        remote_file  "#{new_resource.name}: downloading rt4 source" do
+        remote_file "#{new_resource.name}: downloading rt4 source" do
           source 'https://download.bestpractical.com/pub/rt/release/rt-4.2.10.tar.gz'
           checksum '86258ac7771465be0beae1d8d14d05610c5a938cede418143b8fd7203ccd3eb6'
           path "/usr/src/#{new_resource.name}/rt-4.2.10.tar.gz"
@@ -95,7 +85,7 @@ class Chef
           source 'rt4_build.erb'
           cookbook 'rt4'
           path "/usr/src/#{new_resource.name}/rt-4.2.10/build"
-          mode "0755"
+          mode '0755'
           variables(
             config: new_resource
             )
@@ -117,6 +107,7 @@ class Chef
           variables(
             config: new_resource,
             db_name: db_name_picker,
+            db_port: db_port_picker,
             web_path: web_path_picker
             )
           notifies :restart, "service[#{new_resource.name}-fcgi]", :delayed
@@ -124,13 +115,25 @@ class Chef
 
         execute "#{new_resource.name}: #{new_resource.db_type} db init" do
           command db_init_script
+          user 'postgres'
           not_if notif_db_init_script
+        end
+
+        # with only nginx support, no need to put the fcgi stuff in an only==nginx block.
+        template "/etc/init.d/#{new_resource.name}-fcgi" do
+          source 'rt4_fcgi_init.erb'
+          user 'root'
+          group 'root'
+          mode '0755'
+          cookbook 'rt4'
+          variables(
+            config: new_resource
+            )
         end
 
         service "#{new_resource.name}-fcgi" do
           supports start: true, restart: true, stop: true, status: true
           action [:enable, :start]
-          only_if { new_resource.web_server == 'nginx' }
         end
 
       end

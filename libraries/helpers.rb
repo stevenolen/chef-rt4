@@ -3,12 +3,20 @@ module Rt4Cookbook
     include Chef::DSL::IncludeRecipe
 
     def db_init_script
-      @db_init = ''
-      @db_init = "/usr/bin/perl /opt/#{new_resource.name}/sbin/rt-setup-database "
-      @db_init += '--action init '
-      @db_init += '--dba root ' if new_resource.db_type == 'mysql'
-      @db_init += "--dba-password figureoutabetterway"
-      @db_init
+      case new_resource.db_type
+      when 'mysql'
+        @db_init = ''
+        @db_init = "/usr/bin/perl /opt/#{new_resource.name}/sbin/rt-setup-database "
+        @db_init += '--action init '
+        @db_init += '--dba root '
+        @db_init += "--dba-password #{node['mysql']['server_root_password']}"
+        @db_init
+      when 'postgresql'
+        @db_init = "/usr/bin/perl /opt/#{new_resource.name}/sbin/rt-setup-database "
+        @db_init += '--action init '
+        @db_init += '--dba postgres '
+        @db_init += "--dba-password #{node['postgresql']['password']['postgres']}"
+      end
     end
 
     # we need a script that, regardless of db_type, will cause the db_init not to be run twice.
@@ -16,20 +24,35 @@ module Rt4Cookbook
       @is_db_init = ''
       case new_resource.db_type
       when 'mysql'
-      	@is_db_init = '/usr/bin/mysqlshow '
+        @is_db_init = '/usr/bin/mysqlshow '
         @is_db_init += "--host=#{new_resource.db_host} "
-        @is_db_init += "--port=#{new_resource.db_port} " 
+        @is_db_init += "--port=#{new_resource.db_port} "
         @is_db_init += '-u root '
         @is_db_init += "-p#{node['mysql']['server_root_password']} "
         @is_db_init += "| grep #{db_name_picker}"
         @is_db_init
+      when 'postgres'
+        @is_db_init = 'su - postgres -c "/usr/bin/psql -l '
+        @is_db_init = "| grep #{db_name_picker}"
+        @is_db_init
       end
-      # TODO: postgres
     end
 
     def db_name_picker
-      return new_resource.db_name if new_resource.db_name
-      new_resource.name
+      case new_resource.db_type
+      when 'mysql'
+        return new_resource.db_name if new_resource.db_name
+        new_resource.name
+      when 'postgresql'
+        return new_resource.db_name.sub(/-/, '') if new_resource.db_name
+        new_resource.name.sub(/-/, '')
+      end
+    end
+
+    def db_port_picker
+      return new_resource.db_port if new_resource.db_port
+      return '3306' if new_resource.db_type == 'mysql'
+      return '5432' if new_resource.db_type == 'postgresql'
     end
 
     def web_path_picker
@@ -46,15 +69,19 @@ module Rt4Cookbook
 
     def configure_package_deps
       @pkg_deps = []
-      @pkg_deps += ['libgd-perl', 'libgraphviz-dev', 'graphviz', 'libmysqlclient-dev'] if node['platform_family'] == 'debian'
+      @pkg_deps += %w(libgd-perl libgraphviz-dev graphviz) if node['platform_family'] == 'debian'
       @pkg_deps += %w(libfcgi-perl procps spawn-fcgi) if new_resource.web_server == 'nginx'
+      @pkg_deps += %w(libmysqlclient-dev) if new_resource.db_type == 'mysql'
+      @pkg_deps += %w(postgresql-client-common) if new_resource.db_type == 'postgresql'
+      @pkg_deps += %w() if new_resource.web_server == 'apache'
+      @pkg_deps
     end
 
     def configure_cpan_deps
       @cpan_deps = []
       @cpan_deps += default_rt4_cpan_deps
       @cpan_deps += mysql_rt4_cpan_deps if new_resource.db_type == 'mysql'
-      @cpan_deps += postgresql_rt4_cpan_deps if new_resource.db_type == 'postgres'
+      @cpan_deps += postgresql_rt4_cpan_deps if new_resource.db_type == 'postgresql'
       @cpan_deps += nginx_rt4_cpan_deps if new_resource.web_server == 'nginx'
       @cpan_deps += apache_rt4_cpan_deps if new_resource.web_server == 'apache'
       @cpan_deps
@@ -64,8 +91,7 @@ module Rt4Cookbook
       ['DBD::mysql >= 2.1018']
     end
 
-    def postgres_rt4_cpan_deps
-      # TODO: support postgres
+    def postgresql_rt4_cpan_deps
       ['DBD::Pg']
     end
 
@@ -75,7 +101,6 @@ module Rt4Cookbook
     end
 
     def apache_rt4_cpan_deps
-      # TODO: support apache/httpd
       ['Apache::DBI']
     end
 
@@ -164,7 +189,7 @@ module Rt4Cookbook
        'Plack::Handler::Starlet',
        'Net::SMTP',
        'Convert::Color',
-       #'HTML::FormatText::WithLinks >= 0.14',
+       # 'HTML::FormatText::WithLinks >= 0.14',
        'Crypt::Eksblowfish',
        'Module::Refresh >= 0.03',
        'DateTime::Format::Natural >= 0.67',

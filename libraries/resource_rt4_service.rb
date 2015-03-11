@@ -14,10 +14,10 @@ class Chef
       attribute :correspond_address, kind_of: String, default: nil, required: true
       attribute :comment_address, kind_of: String, default: nil, required: true
       attribute :db_host, kind_of: String, default: 'localhost'
-      attribute :db_port, kind_of: String, default: '3306'
+      attribute :db_port, kind_of: String, default: nil
       attribute :db_name, kind_of: String, default: nil
       attribute :db_user, kind_of: String, default: 'rt4user'
-      attribute :db_pass, kind_of: String, default: ''
+      attribute :db_pass, kind_of: String, default: 'rt4pass'
       attribute :instance, kind_of: String, name_attribute: true
       attribute :version, kind_of: String, default: nil
     end

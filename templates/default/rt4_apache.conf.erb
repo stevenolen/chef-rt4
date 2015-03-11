@@ -1,12 +1,21 @@
 <VirtualHost *:80>
   ServerName <%= node['fqdn'] %>
-
-  Include /etc/request-tracker4/apache2-modperl2.conf
-  RedirectMatch ^/$ /rt
-
-  <Location /rt/REST/1.0/NoAuth>
-    Order Allow,Deny
-    Allow from all
+  
+  Alias <%= @web_path -%> /opt/<%= @config.name -%>/share/html
+  
+  <Location <%= @web_path -%>>
+    FastCgiExternalServer /opt/<%= @config.name -%>/share/html -socket /var/run/<%= @config.name -%>-fcgi.sock 
+  </Location>
+  
+  # Limit mail gateway access to localhost by default
+  <Location <%= @web_path -%>/REST/1.0/NoAuth>
+      <IfVersion >= 2.3>
+          Require local
+      </IfVersion>
+      <IfVersion < 2.3>
+          Order Allow,Deny
+          Allow from 127.0.0.1
+      </IfVersion>
   </Location>
 
 </VirtualHost>

@@ -25,7 +25,7 @@ my %typemap = (
 Set($DatabaseType, $typemap{<%= @config.db_type -%>} || "UNKNOWN");
 Set($DatabaseHost, '<%= @config.db_host -%>');
 Set($DatabaseName, '<%= @db_name -%>');
-Set($DatabasePort, '<%= @config.db_port -%>');
+Set($DatabasePort, '<%= @db_port -%>');
 Set($DatabaseUser , '<%= @config.db_user -%>');
 Set($DatabasePassword , '<%= @config.db_pass -%>');
 
