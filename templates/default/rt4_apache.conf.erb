@@ -1,10 +1,21 @@
 <VirtualHost *:80>
   ServerName <%= node['fqdn'] %>
+  AddDefaultCharset UTF-8
+  AddHandler fcgid-script .fcgi
+  FcgidInitialEnv RT_SITE_CONFIG /opt/<%= @config.name -%>/etc/RT_SiteConfig.pm
   
-  Alias <%= @web_path -%> /opt/<%= @config.name -%>/share/html
+  # The defaults are unlikely to be big enough for an RT site handling
+  # attachments
+  FcgidMaxRequestLen 1073741824
   
-  <Location <%= @web_path -%>>
-    FastCgiExternalServer /opt/<%= @config.name -%>/share/html -socket /var/run/<%= @config.name -%>-fcgi.sock 
+  # Bypass FastCGI for images
+  Alias <%= @web_path -%>/NoAuth/images /opt/<%= @config.name -%>/share/html/NoAuth/images
+  
+  # Use the handler for everything else
+  ScriptAlias <%= @web_path -%> /opt/<%= @config.name -%>/sbin/rt-server.fcgi
+  
+  <Location <%= @web_path -%>/>
+   DirectoryIndex index.html
   </Location>
   
   # Limit mail gateway access to localhost by default
@@ -17,5 +28,4 @@
           Allow from 127.0.0.1
       </IfVersion>
   </Location>
-
 </VirtualHost>

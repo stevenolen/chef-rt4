@@ -2,6 +2,11 @@ module Rt4Cookbook
   module Helpers
     include Chef::DSL::IncludeRecipe
 
+    def db_init_user
+      return 'root' if new_resource.db_type == 'mysql'
+      return 'postgres' if new_resource.db_type == 'postgresql'
+    end
+
     def db_init_script
       case new_resource.db_type
       when 'mysql'
@@ -31,9 +36,8 @@ module Rt4Cookbook
         @is_db_init += "-p#{node['mysql']['server_root_password']} "
         @is_db_init += "| grep #{db_name_picker}"
         @is_db_init
-      when 'postgres'
-        @is_db_init = 'su - postgres -c "/usr/bin/psql -l '
-        @is_db_init = "| grep #{db_name_picker}"
+      when 'postgresql'
+        @is_db_init = "/usr/bin/psql -l | grep #{db_name_picker}"
         @is_db_init
       end
     end
@@ -80,10 +84,9 @@ module Rt4Cookbook
     def configure_cpan_deps
       @cpan_deps = []
       @cpan_deps += default_rt4_cpan_deps
+      @cpan_deps += fcgi_rt4_cpan_deps
       @cpan_deps += mysql_rt4_cpan_deps if new_resource.db_type == 'mysql'
       @cpan_deps += postgresql_rt4_cpan_deps if new_resource.db_type == 'postgresql'
-      @cpan_deps += nginx_rt4_cpan_deps if new_resource.web_server == 'nginx'
-      @cpan_deps += apache_rt4_cpan_deps if new_resource.web_server == 'apache'
       @cpan_deps
     end
 
@@ -95,13 +98,9 @@ module Rt4Cookbook
       ['DBD::Pg']
     end
 
-    def nginx_rt4_cpan_deps
+    def fcgi_rt4_cpan_deps
       # these are fcgi reqs
       ['FCGI::ProcManager', 'FCGI >= 0.74']
-    end
-
-    def apache_rt4_cpan_deps
-      ['Apache::DBI']
     end
 
     def default_rt4_cpan_deps

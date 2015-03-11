@@ -8,14 +8,14 @@ chomp $zone;
 Set($Timezone, $zone);
 
 # BASICS
-Set($rtname, '<%= node['rt4']['fqdn'] -%>');
+Set($rtname, '<%= node['fqdn'] -%>');
 Set($Organization, '<%= @config.organization -%>');
 Set($CorrespondAddress , '<%= @config.correspond_address -%>');
 Set($CommentAddress , '<%= @config.comment_address -%>');
 
 # WEBSERVER
 Set($WebPath , '<%= @web_path -%>');
-Set($WebBaseURL , "http://<%= node['rt4']['fqdn'] -%>");
+Set($WebBaseURL , "http://<%= node['fqdn'] -%>");
 
 # DATABASE
 my %typemap = (

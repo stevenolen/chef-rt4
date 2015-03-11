@@ -46,7 +46,35 @@ class Chef
           nginx_site "#{new_resource.name}" do
             action :enable
           end
-        # TODO: add apache support
+
+          template "/etc/init.d/#{new_resource.name}-fcgi" do
+            source 'rt4_fcgi_init.erb'
+            user 'root'
+            group 'root'
+            mode '0755'
+            cookbook 'rt4'
+            variables(
+              config: new_resource
+              )
+          end
+        when 'apache'
+          httpd_service "#{new_resource.name}" do
+            action [:create, :start]
+          end
+          httpd_module 'fcgid' do
+            instance "#{new_resource.name}"
+          end
+          httpd_config "#{new_resource.name}" do
+            instance "#{new_resource.name}"
+            source 'rt4_apache.conf.erb'
+            cookbook 'rt4'
+            variables(
+              config: new_resource,
+              web_path: web_path_picker
+              )
+            notifies :restart, "httpd_service[#{new_resource.name}]"
+            action :create
+          end
         end
 
         configure_package_deps.each do |pkg|
@@ -115,25 +143,14 @@ class Chef
 
         execute "#{new_resource.name}: #{new_resource.db_type} db init" do
           command db_init_script
-          user 'postgres'
-          not_if notif_db_init_script
-        end
-
-        # with only nginx support, no need to put the fcgi stuff in an only==nginx block.
-        template "/etc/init.d/#{new_resource.name}-fcgi" do
-          source 'rt4_fcgi_init.erb'
-          user 'root'
-          group 'root'
-          mode '0755'
-          cookbook 'rt4'
-          variables(
-            config: new_resource
-            )
+          user db_init_user
+          not_if notif_db_init_script, user: db_init_user
         end
 
         service "#{new_resource.name}-fcgi" do
           supports start: true, restart: true, stop: true, status: true
           action [:enable, :start]
+          only_if { new_resource.web_server == 'nginx' }
         end
 
       end
