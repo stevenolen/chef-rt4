@@ -32,7 +32,7 @@ PROGRAM="/opt/<%= @config.name -%>/sbin/rt-server.fcgi"
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
-DAEMON_OPTS=" -F ${workers:-2} -d / -u www-data -g www-data -s $SOCKFILE -P $PIDFILE -- $PROGRAM"
+DAEMON_OPTS=" -F ${workers:-2} -d / -u <%= @rt4_user -%> -g <%= @rt4_user -%> -s $SOCKFILE -P $PIDFILE -- $PROGRAM"
 
 # Exit if the package is not installed
 [ -e "$DAEMON" ] || exit 0

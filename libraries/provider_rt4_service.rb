@@ -20,12 +20,14 @@ class Chef
 
         case new_resource.db_type
         when 'mysql'
+          include_recipe 'mysql::client'
           mysql_service db_name_picker do
             server_root_password node['mysql']['server_root_password']
             action :create
             only_if { new_resource.db_host == 'localhost' }
           end
         when 'postgresql'
+          include_recipe 'postgresql::client'
           include_recipe 'postgresql::server'
         end
 
@@ -43,29 +45,25 @@ class Chef
               )
           end
 
-          nginx_site "#{new_resource.name}" do
+          nginx_site new_resource.name do
             action :enable
           end
 
           template "/etc/init.d/#{new_resource.name}-fcgi" do
-            source 'rt4_fcgi_init.erb'
+            source "#{node['platform_family']}/rt4_fcgi_init.erb"
             user 'root'
             group 'root'
             mode '0755'
             cookbook 'rt4'
             variables(
-              config: new_resource
+              config: new_resource,
+              rt4_user: rt4_user
               )
           end
         when 'apache'
-          httpd_service "#{new_resource.name}" do
-            action [:create, :start]
-          end
-          httpd_module 'fcgid' do
-            instance "#{new_resource.name}"
-          end
-          httpd_config "#{new_resource.name}" do
-            instance "#{new_resource.name}"
+          configure_epel if node['platform_family'] == 'rhel'
+          httpd_config new_resource.name do
+            instance new_resource.name
             source 'rt4_apache.conf.erb'
             cookbook 'rt4'
             variables(
@@ -74,6 +72,13 @@ class Chef
               )
             notifies :restart, "httpd_service[#{new_resource.name}]"
             action :create
+          end
+          httpd_service new_resource.name do
+            action [:create, :start]
+          end
+          httpd_module 'fcgid' do
+            instance new_resource.name
+            package_name 'mod_fcgid' if node['platform_family'] == 'rhel'
           end
         end
 
@@ -88,8 +93,8 @@ class Chef
         # gets dep list, splits each dep and installs required version if exists
         configure_cpan_deps.each do |item|
           arr_module = item.split(' ', 2)
-          cpan_module "#{arr_module[0]}" do
-            version "#{arr_module[1]}" if arr_module[1]
+          cpan_module arr_module[0] do
+            version arr_module[1] if arr_module[1]
           end
         end
 
@@ -115,7 +120,8 @@ class Chef
           path "/usr/src/#{new_resource.name}/rt-4.2.10/build"
           mode '0755'
           variables(
-            config: new_resource
+            config: new_resource,
+            rt4_user: rt4_user
             )
         end
 

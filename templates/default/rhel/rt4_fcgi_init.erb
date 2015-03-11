@@ -1,0 +1,77 @@
+#!/bin/bash
+#
+# rt4-default-fcgi
+#
+# chkconfig: 2345 50 50
+#       /etc/rc.d/init.d/rt4-default-fcgi
+#
+#       <request-tracker4 FastCGI daemon>
+#       <for use with nginx, generate by chef!>
+#
+# <tags -- see below for tag definitions.  *Every line* from the top
+#  of the file to the end of the tags section must begin with a #
+#  character.  After the tags section, there should be a blank line.
+#  This keeps normal comments in the rest of the file from being
+#  mistaken for tags, should they happen to fit the pattern.>
+
+# Source function library.
+. /etc/init.d/functions
+
+DESC="request-tracker4 FastCGI daemon"
+NAME="<%= @config.name -%>-fcgi"
+SCRIPTNAME="/etc/init.d/$NAME"
+PIDFILE="/var/run/${NAME}.pid"
+SOCKFILE="/var/run/${NAME}.sock"
+export RT_SITE_CONFIG=/opt/<%= @config.name -%>/etc/RT_SiteConfig.pm
+DAEMON="/usr/bin/spawn-fcgi"
+PROGRAM="/opt/<%= @config.name -%>/sbin/rt-server.fcgi"
+
+DAEMON_OPTS=" -F ${workers:-2} -d / -u <%= @rt4_user -%> -g <%= @rt4_user -%> -s $SOCKFILE -P $PIDFILE -- $PROGRAM"
+
+start() {
+  # Return
+  #   0 if daemon has been started
+  #   1 if daemon was already running
+  #   2 if daemon could not be started
+  echo -n "Starting $NAME: "
+  if [ -f $PIDFILE ]; then
+  	PID=`cat $PIDFILE`
+  	echo $NAME already running: $PID
+  	exit 1;
+  else
+  	daemon $DAEMON $DAEMON_OPTS
+  	RETVAL=$?
+  	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$NAME
+  	return $RETVAL
+  fi
+}
+
+stop() {
+  echo -n "Shutting down $NAME: "
+  echo
+  killproc -p $PIDFILE $DAEMON
+  rm -f /var/lock/subsys/$NAME
+  return 0
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $NAME
+
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: $NAME {start|stop|status}"
+        exit 1
+        ;;
+esac
+exit $?

@@ -2,6 +2,27 @@ module Rt4Cookbook
   module Helpers
     include Chef::DSL::IncludeRecipe
 
+    def configure_epel
+      # we need to configure epel since the centos repos don't have mod_fcgid for apache.
+      yum_repository 'epel' do
+        mirrorlist 'http://mirrors.fedoraproject.org/mirrorlist?repo=epel-6&arch=$basearch'
+        description 'Extra Packages for Enterprise Linux 6 - $basearch'
+        enabled true
+        gpgcheck true
+        gpgkey 'http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6'
+      end
+    end
+
+    def rt4_user
+      case node['platform_family']
+      when 'rhel'
+        return 'nginx' if new_resource.web_server == 'nginx'
+        return 'apache' if new_resource.web_server == 'apache'
+      else
+        'www-data'
+      end
+    end
+
     def db_init_user
       return 'root' if new_resource.db_type == 'mysql'
       return 'postgres' if new_resource.db_type == 'postgresql'
@@ -73,11 +94,8 @@ module Rt4Cookbook
 
     def configure_package_deps
       @pkg_deps = []
-      @pkg_deps += %w(libgd-perl libgraphviz-dev graphviz) if node['platform_family'] == 'debian'
-      @pkg_deps += %w(libfcgi-perl procps spawn-fcgi) if new_resource.web_server == 'nginx'
-      @pkg_deps += %w(libmysqlclient-dev) if new_resource.db_type == 'mysql'
-      @pkg_deps += %w(postgresql-client-common) if new_resource.db_type == 'postgresql'
-      @pkg_deps += %w() if new_resource.web_server == 'apache'
+      @pkg_deps += %w(libgd-perl libgraphviz-dev graphviz libfcgi-perl procps spawn-fcgi) if node['platform_family'] == 'debian'
+      @pkg_deps += %w(spawn-fcgi perl-GD graphviz-perl perl-XML-Parser) if node['platform_family'] == 'rhel'
       @pkg_deps
     end
 

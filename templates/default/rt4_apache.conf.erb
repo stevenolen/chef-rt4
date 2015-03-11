@@ -20,12 +20,7 @@
   
   # Limit mail gateway access to localhost by default
   <Location <%= @web_path -%>/REST/1.0/NoAuth>
-      <IfVersion >= 2.3>
-          Require local
-      </IfVersion>
-      <IfVersion < 2.3>
           Order Allow,Deny
           Allow from 127.0.0.1
-      </IfVersion>
   </Location>
 </VirtualHost>

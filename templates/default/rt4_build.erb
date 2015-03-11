@@ -1,4 +1,7 @@
 make install -e \
+RTGROUP=<%= @rt4_user -%> \
+WEB_USER=<%= @rt4_user -%> \
+WEB_GROUP=<%= @rt4_user -%> \
 CONFIG_FILE_PATH=/opt/<%= @config.name -%>/etc \
 RT_PATH=/opt/<%= @config.name -%> \
 RT_ETC_PATH=/opt/<%= @config.name -%>/etc \
