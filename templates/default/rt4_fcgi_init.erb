@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          rt4-fcgi
+# Provides:          <%= @config.name -%>-fcgi
 # Required-Start:    $remote_fs $syslog $network
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -13,13 +13,13 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
 DESC="request-tracker4 FastCGI daemon"
-NAME="rt4-fcgi"
+NAME="<%= @config.name -%>-fcgi"
 SCRIPTNAME="/etc/init.d/$NAME"
 PIDFILE="/var/run/${NAME}.pid"
 SOCKFILE="/var/run/${NAME}.sock"
-export RT_SITE_CONFIG=/etc/request-tracker4/RT_SiteConfig.pm
+export RT_SITE_CONFIG=/opt/<%= @config.name -%>/etc/RT_SiteConfig.pm
 DAEMON="/usr/bin/spawn-fcgi"
-PROGRAM="/usr/share/request-tracker4/libexec/rt-server.fcgi"
+PROGRAM="/opt/<%= @config.name -%>/sbin/rt-server.fcgi"
 
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh

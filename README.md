@@ -1,10 +1,11 @@
-# cens-dhcp-cookbook
+# rt4
 
-TODO: Enter the cookbook description here.
+A cookbook which provides an 'rt4' LWRP for configuring request-tracker4 via a wrapper cookbook.  Please note that (opinionated or not) there a number of steps required for a fully-functioning RT server that are competely left out of this cookbook. In particular, e-mail setup is left 
+up to the wrapper cookbook. 
 
 ## Supported Platforms
 
-TODO: List your supported platforms.
+Ubuntu, Debian, RedHat-based distros have been tested, but minimal extra configuration would be required to support most all Unix-based distros.
 
 ## Attributes
 

@@ -19,8 +19,19 @@
 # limitations under the License.
 
 # Installs nginx and sets up spawn-fcgi rt4 route
-  %w(libapache2-mod-perl2 libapache2-mod-fastcgi libapache-dbi-perl libapache2-mod-fcgid libapache2-mod-perl2).each do |pkg|
-    package pkg
-  end
-  
-  include_recipe 'apache'
+#%w(libapache2-mod-perl2 libapache2-mod-fastcgi libapache-dbi-perl libapache2-mod-fcgid libapache2-mod-perl2).each do |pkg|
+#  package pkg
+#end
+
+# Resolves lib deps as well as apache itself, let's not try harder.
+package 'rt4-apache2'
+
+template '/etc/apache2/sites-available/rt4.conf' do
+	source 'rt4_apache.conf.erb'
+	mode '0644'
+end
+
+link '/etc/apache2/sites-enabled/rt4.conf' do
+  link_type :symbolic
+  to '/etc/apache2/sites-available/rt4.conf'
+end

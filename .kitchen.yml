@@ -7,10 +7,17 @@ provisioner:
 
 platforms:
   - name: ubuntu-12.04
+    driver:
+      network:
+      - ["private_network", {ip: "192.168.33.120"}]
+  - name: ubuntu-14.10
   - name: ubuntu-14.04
+    driver:
+      network:
+      - ["private_network", {ip: "192.168.33.140"}]
   - name: centos-6.4
 
 suites:
   - name: default
-    run_list: ['apt', 'rt4::default']
+    run_list: ['apt', 'rt4_service_test::default']
     attributes:

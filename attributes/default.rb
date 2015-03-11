@@ -20,15 +20,20 @@
 
 default['rt4'].tap do |rt4|
   rt4['server_name'] = node['fqdn']
-  rt4['install_method'] = 'package' # package or source
+  rt4['install_method'] = case node['platform_family']
+                          when 'debian' then 'package'
+                          else 'source'
+                          end
   rt4['version'] = 'latest' # generally only used for source install
   rt4['web_server'] = 'nginx' # one of nginx, apache
+  rt4['db_root_password'] = 'pleasechangeme'
   rt4['db_server'] = 'mysql' # one of mysql, postgres
   rt4['db_host'] = 'localhost'
+  rt4['db_port'] = '3306'
   rt4['db_name'] = 'rt4'
   rt4['db_user'] = 'rt4user'
   rt4['db_password'] = 'pleasechangeme'
-  rt4['conf_dir'] = '/etc/request-tracker4/'
+  rt4['conf_dir'] = '/etc/request-tracker4'
 
   case rt4['web_server']
   when 'nginx'
@@ -36,7 +41,7 @@ default['rt4'].tap do |rt4|
   end
 
   # RT_SiteConfig items
-  rt4['org'] = 'Chef Cookbook'
+  rt4['org'] = 'Example'
   rt4['correspond_addr'] = 'rt4@example.org'
   rt4['comment_addr'] = 'rt4-comment@example.org'
 

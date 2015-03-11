@@ -19,7 +19,9 @@
 # limitations under the License.
 
 # Installs postgresql deps and the server itself if we expect it to run on localhost
-  %w(libdbd-pg-perl libpq5 postgresql-client postgresql-client-9.3 postgresql-client-common).each do |pkg|
-    package pkg
-  end
-  include_recipe 'postgresql::default' if node['rt4']['db_host'] == 'localhost'
+%w(libdbd-pg-perl libpq5 postgresql-client postgresql-client-9.3 postgresql-client-common).each do |pkg|
+  package pkg
+end
+
+node.set['rt4']['db_port'] = '5432'
+include_recipe 'postgresql::server' if node['rt4']['db_host'] == 'localhost'

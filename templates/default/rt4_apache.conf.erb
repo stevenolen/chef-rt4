@@ -1,0 +1,12 @@
+<VirtualHost *:80>
+  ServerName <%= node['fqdn'] %>
+
+  Include /etc/request-tracker4/apache2-modperl2.conf
+  RedirectMatch ^/$ /rt
+
+  <Location /rt/REST/1.0/NoAuth>
+    Order Allow,Deny
+    Allow from all
+  </Location>
+
+</VirtualHost>

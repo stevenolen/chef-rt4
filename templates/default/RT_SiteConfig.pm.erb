@@ -8,24 +8,25 @@ chomp $zone;
 Set($Timezone, $zone);
 
 # BASICS
-Set($rtname, '<% node['rt4']['server_name'] -%>'');
-Set($Organization, '<% node['rt4']['org'] -%>');
-Set($CorrespondAddress , '<% node['rt4']['correspond_addr'] -%>');
-Set($CommentAddress , '<% node['rt4']['comment_addr'] -%>');
+Set($rtname, '<%= node['rt4']['fqdn'] -%>');
+Set($Organization, '<%= @config.organization -%>');
+Set($CorrespondAddress , '<%= @config.correspond_address -%>');
+Set($CommentAddress , '<%= @config.comment_address -%>');
 
 # WEBSERVER
-Set($WebPath , "/rt");
-Set($WebBaseURL , "http://<% node['rt4']['server_name'] -%>");
+Set($WebPath , '<%= @web_path -%>');
+Set($WebBaseURL , "http://<%= node['rt4']['fqdn'] -%>");
 
 # DATABASE
 my %typemap = (
     mysql   => 'mysql',
     postgresql   => 'Pg',
 );
-Set($DatabaseType, $typemap{<% node['rt4']['db_server'] -%>} || "UNKNOWN");
-Set($DatabaseHost, '<% node['rt4]['db_host'] -%>');
-Set($DatabasePort, '<% node['rt4]['db_port'] -%>');
-Set($DatabaseUser , '<% node['rt4]['db_user'] -%>');
-Set($DatabasePassword , '<% node['rt4]['db_password'] -%>');
+Set($DatabaseType, $typemap{<%= @config.db_type -%>} || "UNKNOWN");
+Set($DatabaseHost, '<%= @config.db_host -%>');
+Set($DatabaseName, '<%= @db_name -%>');
+Set($DatabasePort, '<%= @config.db_port -%>');
+Set($DatabaseUser , '<%= @config.db_user -%>');
+Set($DatabasePassword , '<%= @config.db_pass -%>');
 
 1;
