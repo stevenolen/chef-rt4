@@ -132,6 +132,13 @@ class Chef
           subscribes :run, "template[#{new_resource.name}: copying rt4 build file]", :immediately
         end
 
+        group rt4_user do
+          append true
+          members 'postgres'
+          action :modify
+          only_if { new_resource.db_type == 'postgresql'}
+        end
+
         template "/opt/#{new_resource.name}/etc/RT_SiteConfig.pm" do
           source 'RT_SiteConfig.pm.erb'
           mode 0666
