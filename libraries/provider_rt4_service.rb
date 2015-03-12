@@ -136,7 +136,7 @@ class Chef
           append true
           members 'postgres'
           action :modify
-          only_if { new_resource.db_type == 'postgresql'}
+          only_if { new_resource.db_type == 'postgresql' }
         end
 
         template "/opt/#{new_resource.name}/etc/RT_SiteConfig.pm" do

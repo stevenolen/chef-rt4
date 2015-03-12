@@ -33,17 +33,17 @@ describe 'rt4_service_test::nginx_mysql' do
       end
     end
 
-    %w(FCGI::ProcManager FCGI Encode Term::ReadKey Getopt::Long HTTP::Request::Common Term::ReadLine Text::ParseWords 
-       LWP DateTime Class::ReturnValue Text::Quoted Regexp::IPv6 HTML::TreeBuilder CSS::Squish DateTime::Locale Module::Versions::Report 
-       MIME::Entity Digest::SHA List::MoreUtils DBI Locale::Maketext::Lexicon Devel::StackTrace Digest::base HTML::FormatText 
-       Text::Password::Pronounceable Devel::GlobalDestruction Time::ParseDate File::Temp Locale::Maketext Tree::Simple Text::Template 
-       Scalar::Util HTML::Quoted HTML::Scrubber File::Spec DBIx::SearchBuilder Sys::Syslog Mail::Mailer File::ShareDir Regexp::Common 
-       Digest::MD5 Cache::Simple::TimedExpiry File::Glob Class::Accessor Locale::Maketext::Fuzzy Time::HiRes Text::Wrapper 
-       Regexp::Common::net::CIDR Net::CIDR Log::Dispatch UNIVERSAL::require Email::Address HTML::RewriteAttributes URI MIME::Types 
-       GD::Text GD GD::Graph PerlIO::eol GnuPG::Interface IPC::Run GraphViz Data::ICal Pod::Usage Getopt::Long LWP::UserAgent Storable 
-       CSS::Squish Apache::Session Errno Devel::StackTrace IPC::Run3 CGI::Cookie Text::WikiFormat XML::RSS HTML::Mason Digest::MD5 JSON 
-       CGI::Emulate::PSGI CGI CGI::PSGI HTML::Mason::PSGIHandler Plack Plack::Handler::Starlet Net::SMTP Convert::Color Crypt::Eksblowfish 
-       Module::Refresh DateTime::Format::Natural Email::Address::List Symbol::Global::Name HTML::FormatText::WithLinks::AndTables Role::Basic 
+    %w(FCGI::ProcManager FCGI Encode Term::ReadKey Getopt::Long HTTP::Request::Common Term::ReadLine Text::ParseWords
+       LWP DateTime Class::ReturnValue Text::Quoted Regexp::IPv6 HTML::TreeBuilder CSS::Squish DateTime::Locale Module::Versions::Report
+       MIME::Entity Digest::SHA List::MoreUtils DBI Locale::Maketext::Lexicon Devel::StackTrace Digest::base HTML::FormatText
+       Text::Password::Pronounceable Devel::GlobalDestruction Time::ParseDate File::Temp Locale::Maketext Tree::Simple Text::Template
+       Scalar::Util HTML::Quoted HTML::Scrubber File::Spec DBIx::SearchBuilder Sys::Syslog Mail::Mailer File::ShareDir Regexp::Common
+       Digest::MD5 Cache::Simple::TimedExpiry File::Glob Class::Accessor Locale::Maketext::Fuzzy Time::HiRes Text::Wrapper
+       Regexp::Common::net::CIDR Net::CIDR Log::Dispatch UNIVERSAL::require Email::Address HTML::RewriteAttributes URI MIME::Types
+       GD::Text GD GD::Graph PerlIO::eol GnuPG::Interface IPC::Run GraphViz Data::ICal Pod::Usage Getopt::Long LWP::UserAgent Storable
+       CSS::Squish Apache::Session Errno Devel::StackTrace IPC::Run3 CGI::Cookie Text::WikiFormat XML::RSS HTML::Mason Digest::MD5 JSON
+       CGI::Emulate::PSGI CGI CGI::PSGI HTML::Mason::PSGIHandler Plack Plack::Handler::Starlet Net::SMTP Convert::Color Crypt::Eksblowfish
+       Module::Refresh DateTime::Format::Natural Email::Address::List Symbol::Global::Name HTML::FormatText::WithLinks::AndTables Role::Basic
        Date::Manip Date::Extract Data::GUID Mozilla::CA Crypt::SSLeay Net::SSL Crypt::X509 String::ShellQuote). each do |cpan|
       it "installs #{cpan} from cpan" do
         expect(chef_run).to create_cpan_module(cpan)
