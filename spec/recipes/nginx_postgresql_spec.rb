@@ -22,7 +22,6 @@ describe 'rt4_service_test::nginx_postgresql' do
   end
 
   context 'stepping into rt4_service[rt4-default] resource' do
-
     before do
       stub_command('which nginx').and_return(false)
     end
@@ -110,6 +109,5 @@ describe 'rt4_service_test::nginx_postgresql' do
     it 'executes postgresql db init' do
       expect(chef_run).to run_execute('rt4-default: postgresql db init')
     end
-
   end
 end

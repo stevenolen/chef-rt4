@@ -96,6 +96,5 @@ describe 'rt4_service_test::apache_mysql' do
     it 'executes mysql db init' do
       expect(chef_run).to run_execute('rt4-default: mysql db init')
     end
-
   end
 end

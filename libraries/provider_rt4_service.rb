@@ -165,7 +165,6 @@ class Chef
           action [:enable, :start]
           only_if { new_resource.web_server == 'nginx' }
         end
-
       end
     end
   end
