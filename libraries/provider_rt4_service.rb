@@ -90,6 +90,11 @@ class Chef
           force true
           version '>= 2.64'
         end
+        # Ubuntu 12.04 does not have a new enough version of this package installed.
+        cpan_module 'Mail::Header' do
+          force true
+          version '>= 2.12'
+        end
         # gets dep list, splits each dep and installs required version if exists
         configure_cpan_deps.each do |item|
           arr_module = item.split(' ', 2)

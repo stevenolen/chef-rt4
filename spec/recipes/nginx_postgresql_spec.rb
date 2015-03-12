@@ -32,7 +32,7 @@ describe 'rt4_service_test::nginx_postgresql' do
       stub_command('/usr/bin/psql -l | grep rt4default').and_return(false)
     end
 
-    %w(libgd-perl libgraphviz-dev graphviz libfcgi-perl procps spawn-fcgi).each do |pkg|
+    %w(libgd-gd2-perl libgraphviz-dev graphviz libfcgi-perl procps spawn-fcgi).each do |pkg|
       it "installs #{pkg}" do
         expect(chef_run).to install_package(pkg)
       end
@@ -49,7 +49,7 @@ describe 'rt4_service_test::nginx_postgresql' do
        CSS::Squish Apache::Session Errno Devel::StackTrace IPC::Run3 CGI::Cookie Text::WikiFormat XML::RSS HTML::Mason Digest::MD5 JSON
        CGI::Emulate::PSGI CGI CGI::PSGI HTML::Mason::PSGIHandler Plack Plack::Handler::Starlet Net::SMTP Convert::Color Crypt::Eksblowfish
        Module::Refresh DateTime::Format::Natural Email::Address::List Symbol::Global::Name HTML::FormatText::WithLinks::AndTables Role::Basic
-       Date::Manip Date::Extract Data::GUID Mozilla::CA Crypt::SSLeay Net::SSL Crypt::X509 String::ShellQuote). each do |cpan|
+       Date::Manip Date::Extract Data::GUID Mozilla::CA Crypt::SSLeay Net::SSL Crypt::X509 String::ShellQuote Mail::Header). each do |cpan|
       it "installs #{cpan} from cpan" do
         expect(chef_run).to create_cpan_module(cpan)
       end
