@@ -7,20 +7,22 @@ provisioner:
 
 platforms:
   - name: ubuntu-12.04
-    driver:
-      network:
-      - ["private_network", {ip: "192.168.33.120"}]
-  - name: ubuntu-14.10
+    run_list:
+      - recipe[apt]
   - name: ubuntu-14.04
-    driver:
-      network:
-      - ["private_network", {ip: "192.168.33.140"}]
+    run_list:
+      - recipe[apt]
+  - name: debian-7.4
+    run_list:
+      - recipe[apt]
   - name: centos-6.4
-    driver:
-      network:
-      - ["private_network", {ip: "192.168.33.64"}]
 
 suites:
-  - name: default
-    run_list: ['apt', 'rt4_service_test::default']
-    attributes:
+  - name: nginx_mysql
+    run_list: ['rt4_service_test::nginx_mysql']
+  - name: nginx_postgresql
+    run_list: ['rt4_service_test::nginx_postgresql']
+  - name: apache_mysql
+    run_list: ['rt4_service_test::apache_mysql']
+  - name: apache_postgresql
+    run_list: ['rt4_service_test::apache_postgresql']
