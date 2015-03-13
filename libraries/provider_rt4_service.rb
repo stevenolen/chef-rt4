@@ -163,7 +163,7 @@ class Chef
           file "/opt/#{new_resource.name}/etc/#{pg}" do
             user 'postgres'
             group rt4_user
-            only_if { new_resource.db_type == 'postgresql' } 
+            only_if { new_resource.db_type == 'postgresql' }
           end
         end
 

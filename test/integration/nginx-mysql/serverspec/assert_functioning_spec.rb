@@ -7,10 +7,6 @@ describe port(80) do
   it { should be_listening }
 end
 
-describe port(3306) do
-  it { should be_listening}
- end
-
 describe service('nginx') do
   it { should be_enabled }
   it { should be_running }
@@ -21,11 +17,17 @@ describe service('rt4-default-fcgi') do
   it { should be_running }
 end
 
+# MYSQL
+describe port(3306) do
+  it { should be_listening }
+end
+
 describe service('mysql') do
   it { should be_enabled }
   it { should be_running }
 end
 
+# RT is able to create tickets, eg. 'set up'
 describe command('export RTSERVER=http://127.0.0.1/rt4-default && export RTPASSWD=password && /usr/bin/perl /opt/rt4-default/bin/rt create -t ticket set subject="test"') do
-  its(:stdout) { should match /Ticket \d+ created/ }
+  its(:stdout) { should match(/Ticket \d+ created/) }
 end

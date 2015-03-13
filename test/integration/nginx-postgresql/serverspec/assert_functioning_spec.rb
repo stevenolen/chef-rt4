@@ -19,7 +19,7 @@ end
 
 # POSTGRESQL
 describe port(5432) do
-  it { should be_listening}
+  it { should be_listening }
 end
 
 describe service('postgresql') do
@@ -29,5 +29,5 @@ end
 
 # RT is able to create tickets, eg. 'set up'
 describe command('export RTSERVER=http://127.0.0.1/rt4-default && export RTPASSWD=password && /usr/bin/perl /opt/rt4-default/bin/rt create -t ticket set subject="test"') do
-  its(:stdout) { should match /Ticket \d+ created/ }
+  its(:stdout) { should match(/Ticket \d+ created/) }
 end
