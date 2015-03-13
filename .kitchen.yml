@@ -18,11 +18,11 @@ platforms:
   - name: centos-6.4
 
 suites:
-  - name: nginx_mysql
+  - name: nginx-mysql
     run_list: ['rt4_service_test::nginx_mysql']
-  - name: nginx_postgresql
+  - name: nginx-postgresql
     run_list: ['rt4_service_test::nginx_postgresql']
-  - name: apache_mysql
+  - name: apache-mysql
     run_list: ['rt4_service_test::apache_mysql']
-  - name: apache_postgresql
+  - name: apache-postgresql
     run_list: ['rt4_service_test::apache_postgresql']

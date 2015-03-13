@@ -73,12 +73,12 @@ class Chef
             notifies :restart, "httpd_service[#{new_resource.name}]"
             action :create
           end
-          httpd_service new_resource.name do
-            action [:create, :start]
-          end
           httpd_module 'fcgid' do
             instance new_resource.name
             package_name 'mod_fcgid' if node['platform_family'] == 'rhel'
+          end
+          httpd_service new_resource.name do
+            action [:create, :start]
           end
         end
 
@@ -146,9 +146,9 @@ class Chef
 
         template "/opt/#{new_resource.name}/etc/RT_SiteConfig.pm" do
           source 'RT_SiteConfig.pm.erb'
-          mode 0666
+          mode 0770
           owner 'root'
-          group 'root'
+          group rt4_user
           cookbook 'rt4'
           variables(
             config: new_resource,
@@ -159,9 +159,18 @@ class Chef
           notifies :restart, "service[#{new_resource.name}-fcgi]", :delayed
         end
 
+        %w(schema.Pg acl.Pg initialdata).each do |pg|
+          file "/opt/#{new_resource.name}/etc/#{pg}" do
+            user 'postgres'
+            group rt4_user
+            only_if { new_resource.db_type == 'postgresql' } 
+          end
+        end
+
         execute "#{new_resource.name}: #{new_resource.db_type} db init" do
           command db_init_script
           user db_init_user
+          group rt4_user
           not_if notif_db_init_script, user: db_init_user
         end
 
