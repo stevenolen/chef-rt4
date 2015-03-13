@@ -178,7 +178,7 @@ class Chef
         # need this here as nginx will fail to start if backend is dead.
         nginx_site new_resource.name do
           action :enable
-          only_if { new_resource.web_server == 'nginx'}
+          only_if { new_resource.web_server == 'nginx' }
         end
       end
     end
