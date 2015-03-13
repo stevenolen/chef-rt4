@@ -45,10 +45,6 @@ class Chef
               )
           end
 
-          nginx_site new_resource.name do
-            action :enable
-          end
-
           template "/etc/init.d/#{new_resource.name}-fcgi" do
             source "#{node['platform_family']}/rt4_fcgi_init.erb"
             user 'root'
@@ -178,6 +174,11 @@ class Chef
           supports start: true, restart: true, stop: true, status: true
           action [:enable, :start]
           only_if { new_resource.web_server == 'nginx' }
+        end
+        # need this here as nginx will fail to start if backend is dead.
+        nginx_site new_resource.name do
+          action :enable
+          only_if { new_resource.web_server == 'nginx'}
         end
       end
     end
