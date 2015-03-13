@@ -56,6 +56,10 @@ class Chef
               rt4_user: rt4_user
               )
           end
+          nginx_site new_resource.name do
+            action :enable
+            only_if { new_resource.web_server == 'nginx' }
+          end
         when 'apache'
           configure_epel if node['platform_family'] == 'rhel'
           httpd_config new_resource.name do
@@ -175,10 +179,13 @@ class Chef
           action [:enable, :start]
           only_if { new_resource.web_server == 'nginx' }
         end
-        # need this here as nginx will fail to start if backend is dead.
-        nginx_site new_resource.name do
-          action :enable
+
+        # currently appears to be a bug in nginx cookbook that doesn't kill rogue ps
+        execute "#{new_resource.name}: handle killing nginx orphan" do
+          command 'killall nginx'
           only_if { new_resource.web_server == 'nginx' }
+          only_if { 'ps aux | grep [n]ginx' }
+          notifies :restart, 'service[nginx]', :delayed
         end
       end
     end
