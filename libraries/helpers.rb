@@ -94,7 +94,7 @@ module Rt4Cookbook
 
     def configure_package_deps
       @pkg_deps = []
-      @pkg_deps += %w(libgd-gd2-perl libgraphviz-dev graphviz libfcgi-perl procps spawn-fcgi) if node['platform_family'] == 'debian'
+      @pkg_deps += %w(libgd-gd2-perl libgraphviz-dev graphviz libfcgi-perl procps spawn-fcgi libssl-dev) if node['platform_family'] == 'debian'
       @pkg_deps += %w(spawn-fcgi perl-GD graphviz-perl perl-XML-Parser) if node['platform_family'] == 'rhel'
       @pkg_deps
     end

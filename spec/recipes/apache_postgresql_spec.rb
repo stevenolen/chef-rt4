@@ -26,7 +26,7 @@ describe 'rt4_service_test::apache_postgresql' do
       stub_command('/usr/bin/psql -l | grep rt4default').and_return(false)
     end
 
-    %w(libgd-gd2-perl libgraphviz-dev graphviz libfcgi-perl procps spawn-fcgi).each do |pkg|
+    %w(libgd-gd2-perl libgraphviz-dev graphviz libfcgi-perl procps spawn-fcgi libssl-dev).each do |pkg|
       it "installs #{pkg}" do
         expect(chef_run).to install_package(pkg)
       end
