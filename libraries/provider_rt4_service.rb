@@ -179,14 +179,6 @@ class Chef
           action [:enable, :start]
           only_if { new_resource.web_server == 'nginx' }
         end
-
-        # currently appears to be a bug in nginx cookbook that doesn't kill rogue ps
-        execute "#{new_resource.name}: handle killing nginx orphan" do
-          command 'killall nginx'
-          only_if { new_resource.web_server == 'nginx' }
-          only_if { 'ps aux | grep [n]ginx' }
-          notifies :restart, 'service[nginx]', :delayed
-        end
       end
     end
   end
