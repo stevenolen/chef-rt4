@@ -89,6 +89,9 @@ describe 'rt4_service_test::nginx_mysql' do
       expect(chef_run).to enable_service('rt4-default-fcgi')
       expect(chef_run).to start_service('rt4-default-fcgi')
     end
+    it 'does not remove nginx default conf file unless on rhel' do
+      expect(chef_run).to_not delete_file('/etc/nginx/conf.d/default.conf')
+    end
 
     # MYSQL
     it 'installs DBD::mysql from cpan' do

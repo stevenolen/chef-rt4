@@ -17,12 +17,17 @@ describe service('rt4-default-fcgi') do
   it { should be_running }
 end
 
+def mysql_service
+  return 'mysqld' if os[:family] =~ /redhat/
+  'mysql'
+end
+
 # MYSQL
 describe port(3306) do
   it { should be_listening }
 end
 
-describe service('mysql') do
+describe service(mysql_service) do
   it { should be_enabled }
   it { should be_running }
 end

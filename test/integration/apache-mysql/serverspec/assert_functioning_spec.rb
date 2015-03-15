@@ -12,6 +12,11 @@ def apache_service
   'apache2-rt4-default'
 end
 
+def mysql_service
+  return 'mysqld' if os[:family] =~ /redhat/
+  'mysql'
+end
+
 describe service(apache_service) do
   it { should be_enabled }
   it { should be_running }
@@ -22,7 +27,7 @@ describe port(3306) do
   it { should be_listening }
 end
 
-describe service('mysql') do
+describe service('mysqld') do
   it { should be_enabled }
   it { should be_running }
 end

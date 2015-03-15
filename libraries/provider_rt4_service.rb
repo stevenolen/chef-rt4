@@ -179,6 +179,14 @@ class Chef
           action [:enable, :start]
           only_if { new_resource.web_server == 'nginx' }
         end
+
+        # nginx cookbook leaves a default site active in RHEL (even with the above param).
+        # TODO: refactor out of the provider, that's not my place.
+        file '/etc/nginx/conf.d/default.conf' do
+          action :delete
+          only_if { node['platform_family'] == 'rhel' }
+          notifies :restart, 'service[nginx]', :immediately
+        end
       end
     end
   end

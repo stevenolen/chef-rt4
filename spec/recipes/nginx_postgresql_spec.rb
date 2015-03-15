@@ -95,6 +95,9 @@ describe 'rt4_service_test::nginx_postgresql' do
     it 'creates nginx site template' do
       expect(chef_run).to create_template('/etc/nginx/sites-available/rt4-default')
     end
+    it 'does not remove nginx default conf file unless on rhel' do
+      expect(chef_run).to_not delete_file('/etc/nginx/conf.d/default.conf')
+    end
 
     # POSTGRESQL
     it 'installs DBD::pg from cpan' do
