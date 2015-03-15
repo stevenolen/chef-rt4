@@ -5,7 +5,7 @@ metadata
 cookbook 'apt'
 cookbook 'yum'
 cookbook 'postgresql'
-cookbook 'nginx'
+cookbook 'nginx', git: 'https://github.com/miketheman/nginx.git'
 cookbook 'httpd'
 cookbook 'perl', git: 'https://github.com/stevenolen/chef-perl.git', branch: 'not_idempotent'
 cookbook 'mysql', git: 'https://github.com/stevenolen/chef-mysql.git', branch: '5.6.1_helper_bug'
