@@ -100,6 +100,14 @@ describe 'rt4_service_test::nginx_mysql' do
     it 'does not modify web group' do
       expect(chef_run).to_not modify_group('www-data')
     end
+    %w(schema.Pg acl.Pg initialdata).each do |f|
+      it 'sets postgres rt4 init files to be owned by postgres user' do
+        expect(chef_run).to_not create_file("/opt/rt4-default/etc/#{f}").with(
+          user: 'postgres',
+          group: 'www-data'
+        )
+      end
+    end
     it 'executes mysql db init' do
       expect(chef_run).to run_execute('rt4-default: mysql db init')
     end
